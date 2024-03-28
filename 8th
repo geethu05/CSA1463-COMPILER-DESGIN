@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_SYMBOLS 100
+
+// Structure to represent a symbol entry
+struct SymbolEntry {
+    char name[20];
+    int address;
+};
+
+// Global symbol table
+struct SymbolEntry symbolTable[MAX_SYMBOLS];
+int numSymbols = 0;
+
+// Function to insert a symbol into the symbol table
+void insertSymbol(const char *name, int address) {
+    if (numSymbols < MAX_SYMBOLS) {
+        strcpy(symbolTable[numSymbols].name, name);
+        symbolTable[numSymbols].address = address;
+        numSymbols++;
+        printf("Inserted symbol: %s\n", name);
+    } else {
+        printf("Symbol table full. Cannot insert symbol: %s\n", name);
+    }
+}
+
+// Function to search for a symbol in the symbol table
+int searchSymbol(const char *name) {
+    int i;
+    for (i = 0; i < numSymbols; i++) {
+        if (strcmp(symbolTable[i].name, name) == 0) {
+            printf("Symbol found: %s (Address: %d)\n", name, symbolTable[i].address);
+            return i;
+        }
+    }
+    printf("Symbol not found: %s\n", name);
+    return -1;
+}
+
+// Function to delete a symbol from the symbol table
+void deleteSymbol(const char *name) {
+    int index = searchSymbol(name);
+    if (index != -1) {
+        printf("Deleted symbol: %s\n", name);
+        // Move symbols after the deleted one to fill the gap
+        for (int i = index; i < numSymbols - 1; i++) {
+            strcpy(symbolTable[i].name, symbolTable[i + 1].name);
+            symbolTable[i].address = symbolTable[i + 1].address;
+        }
+        numSymbols--;
+    }
+}
+
+int main() {
+    // Insert some symbols into the symbol table
+    insertSymbol("x", 100);
+    insertSymbol("y", 200);
+    insertSymbol("z", 300);
+
+    // Search for a symbol
+    searchSymbol("y");
+
+    // Delete a symbol
+    deleteSymbol("x");
+
+    // Search for the deleted symbol
+    searchSymbol("x");
+
+    return 0;
+}
