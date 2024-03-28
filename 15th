@@ -1,0 +1,44 @@
+#include <stdio.h>
+
+// Example Intermediate Representation (IR) structure
+typedef struct {
+    char op;
+    int operand1;
+    int operand2;
+    int result;
+} IRInstruction;
+
+void generateAssembly(IRInstruction ir) {
+    switch(ir.op) {
+        case '+':
+            printf("ADD %d, %d, %d\n", ir.result, ir.operand1, ir.operand2);
+            break;
+        case '-':
+            printf("SUB %d, %d, %d\n", ir.result, ir.operand1, ir.operand2);
+            break;
+        case '*':
+            printf("MUL %d, %d, %d\n", ir.result, ir.operand1, ir.operand2);
+            break;
+        case '/':
+            printf("DIV %d, %d, %d\n", ir.result, ir.operand1, ir.operand2);
+            break;
+        default:
+            printf("Invalid operation\n");
+    }
+}
+
+int main() {
+    // Example Intermediate Representation (IR) code
+    IRInstruction ir1 = {'+', 10, 20, 30};
+    IRInstruction ir2 = {'-', 30, 15, 40};
+    IRInstruction ir3 = {'*', 40, 5, 50};
+    IRInstruction ir4 = {'/', 50, 2, 60};
+
+    // Generate assembly code for each IR instruction
+    generateAssembly(ir1);
+    generateAssembly(ir2);
+    generateAssembly(ir3);
+    generateAssembly(ir4);
+
+    return 0;
+}
