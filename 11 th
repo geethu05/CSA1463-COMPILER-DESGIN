@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+#include <math.h>
+
+// Function to evaluate expressions with PEMDAS rule
+double evaluateExpression(char *expression) {
+    int i;
+    double result = 0.0;
+    double temp = 0.0;
+    char operator = '+';
+    char *ptr = expression;
+
+    // Process each character in the expression
+    while (*ptr) {
+        if (isspace(*ptr)) {
+            // Skip whitespace
+            ptr++;
+            continue;
+        } else if (isdigit(*ptr)) {
+            // Convert the next number
+            char *endptr;
+            temp = strtod(ptr, &endptr);
+            ptr = endptr;
+        } else if (*ptr == '(') {
+            // Recursively evaluate expressions inside parentheses
+            int count = 1;
+            char *start = ptr + 1;
+            ptr++;
+            while (*ptr && count > 0) {
+                if (*ptr == '(') {
+                    count++;
+                } else if (*ptr == ')') {
+                    count--;
+                }
+                ptr++;
+            }
+            char subExpression[ptr - start];
+            strncpy(subExpression, start, ptr - start - 1);
+            subExpression[ptr - start - 1] = '\0';
+            temp = evaluateExpression(subExpression);
+        } else {
+            // Perform arithmetic operation based on the operator
+            operator = *ptr;
+            ptr++;
+
+            // Evaluate exponentiation first
+            if (operator == '^') {
+                temp = pow(temp, evaluateExpression(ptr));
+                while (*ptr && (isdigit(*ptr) || isspace(*ptr))) {
+                    ptr++;
+                }
+                continue;
+            }
+
+            // Evaluate multiplication and division
+            while (*ptr && (isspace(*ptr) || *ptr == '*' || *ptr == '/')) {
+                char op = *ptr;
+                ptr++;
+                double operand;
+                while (*ptr && (isspace(*ptr))) {
+                    ptr++;
+                }
+                if (op == '*') {
+                    operand = strtod(ptr, &ptr);
+                    temp *= operand;
+                } else if (op == '/') {
+                    operand = strtod(ptr, &ptr);
+                    if (operand != 0) {
+                        temp /= operand;
+                    } else {
+                        printf("Error: Division by zero\n");
+                        return 0.0;
+                    }
+                }
+            }
+        }
+
+        // Perform addition and subtraction
+        if (operator == '+') {
+            result += temp;
+        } else if (operator == '-') {
+            result -= temp;
+        }
+    }
+
+    return result;
+}
+
+int main() {
+    char expression[100];
+    printf("Enter an arithmetic expression: ");
+    fgets(expression, sizeof(expression), stdin);
+    
+    // Remove trailing newline character if present
+    expression[strcspn(expression, "\n")] = '\0';
+
+    double result = evaluateExpression(expression);
+    printf("Result: %lf\n", result);
+
+    return 0;
+}
