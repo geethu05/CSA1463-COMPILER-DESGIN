@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+// Structure to represent a three-address code instruction
+struct ThreeAddressCode {
+    char result[10];
+    char op;
+    char arg1[10];
+    char arg2[10];
+};
+
+// Function to generate three-address code for an arithmetic expression
+void generateThreeAddressCode(const char *expression) {
+    struct ThreeAddressCode code[100];
+    int codeIndex = 0;
+    char tempVar = 't';
+    int tempVarCount = 0;
+
+    int i = 0;
+    while (expression[i] != '\0') {
+        if (isdigit(expression[i])) {
+            // Operand found, scan till end of number
+            int j = i + 1;
+            while (isdigit(expression[j])) {
+                j++;
+            }
+            // Create new temporary variable
+            sprintf(code[codeIndex].result, "%c%d", tempVar, tempVarCount++);
+            code[codeIndex].op = '=';
+            strncpy(code[codeIndex].arg1, &expression[i], j - i);
+            code[codeIndex].arg1[j - i] = '\0';
+            code[codeIndex].arg2[0] = '\0';
+            codeIndex++;
+            i = j;
+        } else if (expression[i] == '+' || expression[i] == '-' || expression[i] == '*' || expression[i] == '/') {
+            // Operator found
+            code[codeIndex].op = expression[i];
+            code[codeIndex].result[0] = '\0';
+            code[codeIndex].arg1[0] = '\0';
+            code[codeIndex].arg2[0] = '\0';
+            i++;
+        } else if (expression[i] == '(' || expression[i] == ')') {
+            // Skip parentheses
+            i++;
+        } else if (isspace(expression[i])) {
+            // Skip whitespace
+            i++;
+        } else {
+            printf("Invalid character found: %c\n", expression[i]);
+            return;
+        }
+    }
+
+    // Print the generated three-address code
+    printf("Generated Three-Address Code:\n");
+    for (int j = 0; j < codeIndex; j++) {
+        printf("%s = %s %c %s\n", code[j].result, code[j].arg1, code[j].op, code[j].arg2);
+    }
+}
+
+int main() {
+    char expression[100];
+    printf("Enter an arithmetic expression: ");
+    fgets(expression, sizeof(expression), stdin);
+    
+    // Remove trailing newline character if present
+    expression[strcspn(expression, "\n")] = '\0';
+
+    generateThreeAddressCode(expression);
+
+    return 0;
+}
