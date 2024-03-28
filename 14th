@@ -1,0 +1,28 @@
+#include <stdio.h>
+
+int main() {
+    // Original version
+    int a = 5;
+    int b = 3;
+    int c, d, result;
+
+    // Common subexpression: a + b
+    c = a + b; // common subexpression
+    d = a + b; // common subexpression
+
+    result = c * d;
+
+    printf("Original Result: %d\n", result);
+
+    // Optimized version
+    int c_optimized, result_optimized;
+
+    // Common subexpression eliminated
+    c_optimized = a + b; // common subexpression
+
+    result_optimized = c_optimized * c_optimized; // only one calculation of c
+
+    printf("Optimized Result: %d\n", result_optimized);
+
+    return 0;
+}
