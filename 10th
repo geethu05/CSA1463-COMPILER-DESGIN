@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <ctype.h>
+
+char input[100];
+int pos = 0;
+
+void match(char c) {
+    if (input[pos] == c) {
+        pos++;
+    } else {
+        printf("Error: Expected '%c' at position %d\n", c, pos);
+        exit(1);
+    }
+}
+
+void factor();
+void term();
+void expression();
+
+void factor() {
+    if (isdigit(input[pos])) {
+        match(input[pos]);
+    } else if (input[pos] == '(') {
+        match('(');
+        expression();
+        match(')');
+    } else {
+        printf("Error: Invalid expression at position %d\n", pos);
+        exit(1);
+    }
+}
+
+void term() {
+    factor();
+    while (input[pos] == '*' || input[pos] == '/') {
+        if (input[pos] == '*') {
+            match('*');
+            factor();
+        } else if (input[pos] == '/') {
+            match('/');
+            factor();
+        }
+    }
+}
+
+void expression() {
+    term();
+    while (input[pos] == '+' || input[pos] == '-') {
+        if (input[pos] == '+') {
+            match('+');
+            term();
+        } else if (input[pos] == '-') {
+            match('-');
+            term();
+        }
+    }
+}
+
+int main() {
+    printf("Enter an arithmetic expression: ");
+    fgets(input, sizeof(input), stdin);
+
+    // Remove newline character
+    if (input[strlen(input) - 1] == '\n') {
+        input[strlen(input) - 1] = '\0';
+    }
+
+    expression();
+
+    if (input[pos] == '\0') {
+        printf("Input is a valid arithmetic expression.\n");
+    } else {
+        printf("Error: Invalid expression at position %d\n", pos);
+    }
+
+    return 0;
+}
