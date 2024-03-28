@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_PROD_LEN 20
+
+// Structure to represent a production
+struct Production {
+    char nonTerminal;
+    char *production;
+};
+
+// Function to eliminate left factoring from a production set
+void eliminateLeftFactoring(struct Production *productions, int numProductions) {
+    int i, j, k, l;
+    for (i = 0; i < numProductions; i++) {
+        char commonPrefix[MAX_PROD_LEN] = "";
+        int prefixLength = 0;
+        for (j = 0; j < numProductions; j++) {
+            if (productions[i].nonTerminal == productions[j].nonTerminal && i != j) {
+                for (k = 0, l = 0; productions[i].production[k] == productions[j].production[l]; k++, l++) {
+                    commonPrefix[k] = productions[i].production[k];
+                }
+                commonPrefix[k] = '\0';
+                if (strlen(commonPrefix) > prefixLength) {
+                    prefixLength = strlen(commonPrefix);
+                }
+            }
+        }
+        if (prefixLength > 0) {
+            printf("Common prefix for productions of %c: %s\n", productions[i].nonTerminal, commonPrefix);
+            printf("Eliminated Left Factoring for %c:\n", productions[i].nonTerminal);
+            printf("%c -> %s%c'\n", productions[i].nonTerminal, commonPrefix, productions[i].nonTerminal);
+            printf("%c' -> ", productions[i].nonTerminal);
+            int m;
+            for (m = prefixLength; productions[i].production[m] != '\0'; m++) {
+                printf("%c", productions[i].production[m]);
+            }
+            printf("| \u03B5\n"); // '\u03B5' represents epsilon
+        } else {
+            printf("No common prefix found for %c\n", productions[i].nonTerminal);
+        }
+    }
+}
+
+int main() {
+    int numProductions;
+    printf("Enter the number of productions: ");
+    scanf("%d", &numProductions);
+    getchar(); // Clear the input buffer
+
+    struct Production *productions = (struct Production *)malloc(numProductions * sizeof(struct Production));
+    if (productions == NULL) {
+        printf("Memory allocation failed\n");
+        return 1;
+    }
+
+    // Input productions
+    int i;
+    for (i = 0; i < numProductions; i++) {
+        printf("Enter production %d (in the form nonTerminal -> production): ", i + 1);
+        char input[MAX_PROD_LEN];
+        fgets(input, MAX_PROD_LEN, stdin);
+        sscanf(input, "%c -> %[^\n]", &productions[i].nonTerminal, input);
+        productions[i].production = strdup(input);
+    }
+
+    // Eliminate left factoring
+    eliminateLeftFactoring(productions, numProductions);
+
+    // Free allocated memory
+    for (i = 0; i < numProductions; i++) {
+        free(productions[i].production);
+    }
+    free(productions);
+
+    return 0;
+}
