@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX_RULES 10
+#define MAX_SYMBOL_LEN 10
+#define MAX_PROD_LEN 20
+
+char productions[MAX_RULES][MAX_PROD_LEN];
+char nonTerminals[MAX_RULES];
+int numProductions = 0;
+
+void eliminateLeftRecursion(char nonTerminal) {
+    int i;
+    for (i = 0; i < numProductions; i++) {
+        if (productions[i][0] == nonTerminal) {
+            char newNonTerminal = productions[i][0];
+            printf("%c' -> ", newNonTerminal);
+            int j;
+            for (j = 3; productions[i][j] != '\0'; j++) {
+                printf("%c", productions[i][j]);
+            }
+            printf("%c'|\u03B5\n", newNonTerminal); // '\u03B5' represents epsilon
+            printf("%c -> ", newNonTerminal);
+            for (j = 3; productions[i][j] != '\0'; j++) {
+                printf("%c", productions[i][j]);
+            }
+            printf("%c'\n", newNonTerminal);
+        }
+    }
+}
+
+int main() {
+    printf("Enter the number of productions: ");
+    scanf("%d", &numProductions);
+    getchar(); // Clear the input buffer
+
+    int i;
+    for (i = 0; i < numProductions; i++) {
+        printf("Enter production %d: ", i + 1);
+        fgets(productions[i], MAX_PROD_LEN, stdin);
+        nonTerminals[i] = productions[i][0];
+    }
+
+    for (i = 0; i < numProductions; i++) {
+        eliminateLeftRecursion(nonTerminals[i]);
+    }
+
+    return 0;
+}
