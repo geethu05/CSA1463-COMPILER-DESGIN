@@ -1,0 +1,33 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#define MAX_SIZE 1000
+
+int main() {
+    char input[MAX_SIZE];
+    int characters = 0, words = 0, lines = 0;
+
+    printf("Enter text (Ctrl+D to end):\n");
+
+    while (fgets(input, MAX_SIZE, stdin) != NULL) {
+        lines++;
+        for (int i = 0; input[i] != '\0'; i++) {
+            characters++;
+
+            // Check for end of word
+            if (isspace(input[i]) || input[i] == '\n') {
+                words++;
+            }
+        }
+    }
+
+    // Adjust words count for the last line
+    words--;
+
+    printf("\nNumber of characters: %d\n", characters);
+    printf("Number of words: %d\n", words);
+    printf("Number of lines: %d\n", lines);
+
+    return 0;
+}
